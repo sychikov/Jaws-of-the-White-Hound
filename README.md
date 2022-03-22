@@ -1,6 +1,6 @@
 # Jaws-of-the-White-Hound
 
-#Installing:
+<h2>Installing:</h2>
 
 Install few important things:
 
