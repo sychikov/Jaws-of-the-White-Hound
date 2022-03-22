@@ -15,11 +15,11 @@ After that do this:
     sudo chown root:root /usr/local/bin/geckodriver
     sudo chmod +x /usr/local/bin/geckodriver
 
-#Using:
+<h2>Using:</h2>
 
     python3 main_sec.py
-
-#Keys and commands:
+    
+<h2>Keys and commands:</h2>
 
     help - show command list
     exit - finish work
@@ -27,7 +27,7 @@ After that do this:
     change - change options. Syntax: change *option* *new value*
     run - start testing
 
-#Warning:
+<h2>Warning:</h2>
 Versions of program began from 0 can work unstable and in some cases break up your machine, so be careful by using that.
 
 
