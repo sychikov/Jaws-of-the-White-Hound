@@ -1,4 +1,5 @@
 # Jaws-of-the-White-Hound
+This is a utility for finding XSS vulnerabilities by analyzing the source code of sites 
 
 <h2>Installing:</h2>
 
