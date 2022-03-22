@@ -8,6 +8,7 @@ Install few important things:
     sudo apt install firefox
 
 Then you need geckogriver, so download it right here: https://github.com/mozilla/geckodriver/releases
+
 After that do this:
 
     tar -xvzf geckodriver_linux64.tar.gz
