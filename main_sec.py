@@ -1,5 +1,5 @@
 from Parser import get_links
-from pentest import main_test
+from module_testing import main_test
 import colorama
 from colorama import Fore, Back, Style
 import os
@@ -73,4 +73,3 @@ def main_cycle():
 
 
 hello()
-
