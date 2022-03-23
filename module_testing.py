@@ -3,20 +3,25 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.alert import Alert
 import pandas as pd
+from module_parsing import white, white_borderless, crop_link, get_type_of_link
+#from module_downloading import download
 
 main_injection = '<script>alert("bGljayBteSBiYWxscw")</script>'
 Array_of_results = []
 site = None
 primal_site = None
 slave_site = None
+iteration_level = 0
+is_quick_test = 0
+Array_of_links = None
 
 
 def prnt_info(title, file_way):
-    print("[  ?  ] Link of site: " + file_way)
-    print("[  ?  ] Title of site: " + title)
+    print("[  ?  ] Link of site:" + white(file_way))
+    print("[  ?  ] Title of site:" + white(title))
 
-def form_parser():
-    #try:
+def form_parser(is_quick_test):
+    try:
         Array_of_form_tmp = site.find_elements_by_xpath("//form")
         if len(Array_of_form_tmp) == 0:
             print("[  -  ] There is no way to inject.")
@@ -27,11 +32,12 @@ def form_parser():
             if form.find_elements_by_xpath('.//input[@type="text"]'):
                 Array_of_form.append(form)
 
-        print("[  ?  ] There is " + str(len(Array_of_form)) + " potential ways to attack.")
+        if is_quick_test == 1:
+            print("[  ?  ] There is" + white(len(Array_of_form)) + "potential ways to attack.")
 
         return Array_of_form
-    #except:
-        #print("[  -  ] Something wrong with quick test. \n")
+    except:
+        print("[  -  ] Something wrong with creating array of forms. \n")
 
 def prepare_slaves_and_primals(file_way):
     global primal_site
@@ -48,7 +54,6 @@ def refresh_slave(file_way):
     site.switch_to.window(primal_site)
     site.execute_script("window.open('" + file_way + "');")
     slave_site = site.window_handles[1]
-
 
 def prepare(file_way):
     global site
@@ -72,7 +77,7 @@ def began_test(file_way, Array_of_form):
 
 def load_injection(count):
     site.switch_to.window(slave_site)
-    Array_of_form = form_parser()
+    Array_of_form = form_parser(0)
     local_count = 0
     for form in Array_of_form:
         local_count +=1
@@ -80,24 +85,20 @@ def load_injection(count):
             Array_of_inputs = form.find_elements_by_xpath('.//input[@type="text"]')
             for inpt in Array_of_inputs:
                 inpt.send_keys(main_injection)
-            form.find_element_by_xpath('.//input[@type="button"]').click()
+            tmp = form.get_attribute("innerHTML")
+            try:
+                button = form.find_element_by_xpath('.//input[@type="button"]')
+                button.click()
+            except:
+                form.send_keys(Keys.ENTER)
             if check_alerts():
-                print("Very important information!!!!")
+                info_of_vulnerability(tmp)
             break
 
 
-#def find_buttons():
-    #try:
-        #Array_of_butt = site.find_elements_by_xpath('//input[@type="button"]')
-        #if len(Array_of_butt) == 0:
-            #print("[  -  ] There is no way to upload injection.")
-            #return 0
-        #else:
-            #print("[  ?  ] There is " + str(len(Array_of_butt)) + " potentian ways to upload injection.\n")
-            #return Array_of_butt
-
-    #except:
-        #print("[  -  ] Something wrong with buttons of this website. \n")
+def info_of_vulnerability(info):
+    print("[  ?  ] Vulnerable code: \n")
+    print(white_borderless(info) + "\n")
 
 
 def check_alerts():
@@ -110,14 +111,29 @@ def check_alerts():
         return 0
 
 
-def main_test(file_way):
+def main_test(file_way_t, iteration_level_tmp):
     #try:
+        global iteration_level
+        global Array_of_links
+        file_way = file_way_t
+        iteration_level = iteration_level_tmp
+
+        if get_type_of_link(file_way) != "file:":
+            file_way = download(file_way_t, iteration_level)
+
         site = prepare(file_way)
         site.implicitly_wait(10)
         prnt_info(site.title, file_way)
-        Array_of_form = form_parser()
+        Array_of_form = form_parser(1)
         prepare_slaves_and_primals(file_way)
-        result = began_test(file_way, Array_of_form)
+
+        if iteration_level == 0:
+            result = began_test(file_way, Array_of_form)
+
+        else:
+            part_of_href = crop_link(file_way)
+            #Array_of_links = get_href(part_of_href)
+
 
         #if result == 0:
             #raise Exception()
