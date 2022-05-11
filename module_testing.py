@@ -118,8 +118,8 @@ def main_test(file_way_t, iteration_level_tmp):
         file_way = file_way_t
         iteration_level = iteration_level_tmp
 
-        if get_type_of_link(file_way) != "file:":
-            file_way = download(file_way_t, iteration_level)
+        #if get_type_of_link(file_way) != "file:":
+            #file_way = download(file_way_t, iteration_level)
 
         site = prepare(file_way)
         site.implicitly_wait(10)
