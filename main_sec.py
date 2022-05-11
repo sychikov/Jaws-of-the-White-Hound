@@ -53,10 +53,12 @@ def change_options(cmd_c):
 
 def run():
     #try:
-        print("[  !  ] You feel like something terrible is coming. \n")
+        print("[  !  ] Test is running. \n")
         if upload_links_from_file == 1:
-            Array = get_links(file_way)
+            print("[  !  ] Preparing to test. \n")
+            Array = get_links(file_way, iteration_level)
             count = 0
+            print("[  !  ] Preparations is over. Real test begin now. \n")
             for link in Array:
                 count += 1
                 print("[  +  ] Test " + str(count) + "\n")
