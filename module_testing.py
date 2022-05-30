@@ -3,10 +3,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.alert import Alert
 import pandas as pd
-from module_parsing import white, white_borderless, crop_link, get_type_of_link
+from module_parsing import white, white_borderless, crop_link, get_type_of_link, get_injection
 #from module_downloading import download
 
-main_injection = '<script>alert("bGljayBteSBiYWxscw")</script>'
+#main_injection = '<script>alert("bGljayBteSBiYWxscw")</script>'
+main_injection = ""
 Array_of_results = []
 site = None
 primal_site = None
@@ -14,7 +15,6 @@ slave_site = None
 iteration_level = 0
 is_quick_test = 0
 Array_of_links = None
-
 
 def prnt_info(title, file_way):
     print("[  ?  ] Link of site:" + white(file_way))
@@ -102,19 +102,25 @@ def info_of_vulnerability(info):
 
 
 def check_alerts():
-    alert = Alert(site)
-    if alert.text == "bGljayBteSBiYWxscw":
-        print("[  !  ] Found the vulnerability !")
-        alert.accept()
-        return 1
-    else:
+    try:
+        alert = Alert(site)
+        if alert.text == "bGljayBteSBiYWxscw":
+            print("[  !  ] Found the vulnerability !")
+            alert.accept()
+            return 1
+        else:
+            return 0
+    except:
         return 0
+
 
 
 def main_test(file_way_t, iteration_level_tmp):
     #try:
         global iteration_level
         global Array_of_links
+        global main_injection
+        main_injection = get_injection()
         file_way = file_way_t
         iteration_level = iteration_level_tmp
 
