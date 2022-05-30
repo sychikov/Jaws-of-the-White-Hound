@@ -49,3 +49,14 @@ def crop_link(link):
 def get_type_of_link(link):
     link_t = link.split("/")
     return link_t[0]
+
+def get_injection():
+    with open("parameters", "r") as file:
+        for key in file:
+            return key
+
+def change_injection(new_injection):
+    with open("parameters", "w") as file:
+        file.clear()
+        file.write(new_injection + '\n')
+
