@@ -22,22 +22,67 @@ def prnt_info(title, file_way):
 
 def form_parser(is_quick_test):
     try:
-        Array_of_form_tmp = site.find_elements_by_xpath("//form")
-        if len(Array_of_form_tmp) == 0:
-            print("[  -  ] There is no way to inject.")
-            return 0
+        check = 1
+        Array_of_ways = []
+        Array_of_ways_tmp = site.find_elements_by_xpath("//form")
+        if len(Array_of_ways_tmp) == 0:
+            check = check - 1
+        else:
+            for form in Array_of_ways_tmp:
+                if form.find_elements_by_xpath('.//input[@type="text"]'):
+                    Array_of_ways.append(form)
 
-        Array_of_form = []
-        for form in Array_of_form_tmp:
-            if form.find_elements_by_xpath('.//input[@type="text"]'):
-                Array_of_form.append(form)
+        Array_of_div_tmp = site.find_elements_by_xpath("//div")
+        if len(Array_of_div_tmp) == 0:
+            check = check - 1
+        else:
+            for div in Array_of_div_tmp:
+                if div.find_elements_by_xpath('.//input[@type="text"]'):
+                    Array_of_ways.append(div)
 
-        if is_quick_test == 1:
-            print("[  ?  ] There is" + white(len(Array_of_form)) + "potential ways to attack.")
+        Array_of_ways = fix_repeats(Array_of_ways)
 
-        return Array_of_form
+        if check == -1:
+            print("[  -  ] Ways to attack weren't found.")
+        else:
+            if is_quick_test == 1:
+                print("[  ?  ] There is" + white(len(Array_of_ways)) + "potential ways to attack.")
+
+        return Array_of_ways
     except:
-        print("[  -  ] Something wrong with creating array of forms. \n")
+        print("[  -  ] Something wrong with creating array of forms and divs. \n")
+
+def fix_repeats(Array_original):
+
+    Array_of_ways_tmp = Array_original
+    Array_of_ways= []
+    Array_of_lenghts = []
+    for tmp in Array_of_ways_tmp:
+        Array_of_lenghts.append(len(str(tmp.get_attribute("innerHTML"))))
+
+    n = 1
+    while n < len(Array_of_ways_tmp):
+        for i in range(len(Array_of_ways_tmp) - n):
+            if Array_of_lenghts[i] > Array_of_lenghts[i + 1]:
+                Array_of_ways_tmp[i], Array_of_ways_tmp[i + 1] = Array_of_ways_tmp[i + 1], Array_of_ways_tmp[i]
+                Array_of_lenghts[i], Array_of_lenghts[i + 1] = Array_of_lenghts[i + 1], Array_of_lenghts[i]
+        n += 1
+
+    n = 1
+    for first in Array_of_ways_tmp:
+        check = 0
+        if n == 1:
+            n = 2
+            Array_of_ways.append(first)
+            continue
+        for second in Array_of_ways:
+            if second.get_attribute("innerHTML") in first.get_attribute("innerHTML"):
+                check = 1
+                break
+        if check == 0:
+            Array_of_ways.append(first)
+
+    return Array_of_ways
 
 def prepare_slaves_and_primals(file_way):
     global primal_site
@@ -66,9 +111,9 @@ def prepare(file_way):
 
     return site
 
-def began_test(file_way, Array_of_form):
+def began_test(file_way, Array_of_ways):
     count = 0
-    for form in Array_of_form:
+    for form in Array_of_ways:
         count +=1
         load_injection(count)
         refresh_slave(file_way)
@@ -77,9 +122,9 @@ def began_test(file_way, Array_of_form):
 
 def load_injection(count):
     site.switch_to.window(slave_site)
-    Array_of_form = form_parser(0)
+    Array_of_ways = form_parser(0)
     local_count = 0
-    for form in Array_of_form:
+    for form in Array_of_ways:
         local_count +=1
         if local_count == count:
             Array_of_inputs = form.find_elements_by_xpath('.//input[@type="text"]')
@@ -130,11 +175,11 @@ def main_test(file_way_t, iteration_level_tmp):
         site = prepare(file_way)
         site.implicitly_wait(10)
         prnt_info(site.title, file_way)
-        Array_of_form = form_parser(1)
+        Array_of_ways = form_parser(1)
         prepare_slaves_and_primals(file_way)
 
         if iteration_level == 0:
-            result = began_test(file_way, Array_of_form)
+            result = began_test(file_way, Array_of_ways)
 
         else:
             part_of_href = crop_link(file_way)
